@@ -18,7 +18,6 @@ public class BookingForm extends JFrame {
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setLayout(new BorderLayout());
 
-        // Input Panel (North)
         JPanel inputPanel = new JPanel();
         inputPanel.setLayout(new BoxLayout(inputPanel, BoxLayout.Y_AXIS));
 
@@ -30,7 +29,6 @@ public class BookingForm extends JFrame {
         row1.add(new JLabel("User ID:"));
         userIdField = new JTextField(8);
         row1.add(userIdField);
-
         inputPanel.add(row1);
 
         JPanel row2 = new JPanel(new FlowLayout(FlowLayout.LEFT));
@@ -41,50 +39,57 @@ public class BookingForm extends JFrame {
         row2.add(new JLabel("Date To (YYYY-MM-DD):"));
         dateToField = new JTextField(10);
         row2.add(dateToField);
-
         inputPanel.add(row2);
 
         JPanel row3 = new JPanel(new FlowLayout(FlowLayout.LEFT));
         JButton bookButton = new JButton("Book Equipment");
         row3.add(bookButton);
+        inputPanel.add(row3);
 
-        row3.add(new JLabel("Booking ID to Return:"));
-        returnBookingIdField = new JTextField(8);
-        row3.add(returnBookingIdField);
+        JPanel row4 = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        row4.add(new JLabel("Booking ID to Return:"));
+        returnBookingIdField = new JTextField(10);
+        row4.add(returnBookingIdField);
 
         JButton returnButton = new JButton("Return Equipment");
-        row3.add(returnButton);
+        row4.add(returnButton);
 
         JButton cleanupButton = new JButton("Cleanup Old Alerts");
-        row3.add(cleanupButton);
+        row4.add(cleanupButton);
+        inputPanel.add(row4);
 
-        inputPanel.add(row3);
         add(inputPanel, BorderLayout.NORTH);
 
-        // Booking Table (Center)
         bookingModel = new DefaultTableModel();
         bookingModel.setColumnIdentifiers(new String[]{"Booking ID", "Equip ID", "User ID", "From", "To", "Status"});
         bookingTable = new JTable(bookingModel);
         add(new JScrollPane(bookingTable), BorderLayout.CENTER);
 
-        // Availability Table (South)
         availabilityModel = new DefaultTableModel();
         availabilityModel.setColumnIdentifiers(new String[]{"ID", "Type", "Condition", "Location", "Availability"});
         availabilityTable = new JTable(availabilityModel);
         add(new JScrollPane(availabilityTable), BorderLayout.SOUTH);
 
-        // Button Actions
         bookButton.addActionListener(e -> {
             try (Connection conn = DBConnection.getConnection()) {
-                CallableStatement stmt = conn.prepareCall("CALL SafeBookEquipment(?, ?, ?, ?)");
+                CallableStatement stmt = conn.prepareCall("CALL SafeBookEquipment(?, ?, ?, ?, ?)");
                 stmt.setInt(1, Integer.parseInt(equipmentIdField.getText()));
                 stmt.setInt(2, Integer.parseInt(userIdField.getText()));
                 stmt.setDate(3, Date.valueOf(dateFromField.getText()));
                 stmt.setDate(4, Date.valueOf(dateToField.getText()));
+                stmt.registerOutParameter(5, Types.VARCHAR);
                 stmt.execute();
-                JOptionPane.showMessageDialog(this, "Booking attempted (check for availability and conflicts)");
+
+                String message = stmt.getString(5);
+                JOptionPane.showMessageDialog(this, message);
+
                 loadBookings();
                 loadAvailability();
+
+                equipmentIdField.setText("");
+                userIdField.setText("");
+                dateFromField.setText("");
+                dateToField.setText("");
             } catch (Exception ex) {
                 JOptionPane.showMessageDialog(this, "Error: " + ex.getMessage());
             }
@@ -98,6 +103,7 @@ public class BookingForm extends JFrame {
                 JOptionPane.showMessageDialog(this, "Equipment returned and usage updated.");
                 loadBookings();
                 loadAvailability();
+                returnBookingIdField.setText("");
             } catch (Exception ex) {
                 JOptionPane.showMessageDialog(this, "Error: " + ex.getMessage());
             }
@@ -108,6 +114,7 @@ public class BookingForm extends JFrame {
                 CallableStatement stmt = conn.prepareCall("CALL CleanupOldOverdueAlerts()");
                 stmt.execute();
                 JOptionPane.showMessageDialog(this, "Old overdue alerts cleaned up.");
+                loadBookings();
             } catch (Exception ex) {
                 JOptionPane.showMessageDialog(this, "Error: " + ex.getMessage());
             }
