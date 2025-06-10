@@ -1,0 +1,57 @@
+@startuml
+!define Table(name,desc) class name as "desc" << (T,#FFAAAA) >>
+!define PK <<PK>>
+!define FK <<FK>>
+
+skinparam classAttributeIconSize 0
+
+Table(Users, "Users") {
+  PK user_id : INT
+  name : VARCHAR(100)
+  role : ENUM('Student', 'Admin', 'Technician')
+}
+
+Table(Equipment, "Equipment") {
+  PK equipment_id : INT
+  type1 : VARCHAR(50)
+  condition1 : VARCHAR(50)
+  location : VARCHAR(100)
+  availability : ENUM('Available', 'Unavailable')
+}
+
+Table(Bookings, "Bookings") {
+  PK booking_id : INT
+  FK equipment_id : INT
+  FK user_id : INT
+  date_from : DATE
+  date_to : DATE
+  status1 : ENUM('Assigned', 'Returned')
+}
+
+Table(MaintenanceLogs, "Maintenance Logs") {
+  PK log_id : INT
+  FK equipment_id : INT
+  FK technician_id : INT
+  date1 : DATE
+  description1 : TEXT
+}
+
+Table(UsageCounter, "Usage Counter") {
+  PK equipment_id : INT
+  usage_count : INT
+}
+
+Table(OverdueAlerts, "Overdue Alerts") {
+  PK alert_id : INT
+  FK booking_id : INT
+  alert_message : TEXT
+}
+
+' Relationships
+Users ||--o{ Bookings : makes
+Users ||--o{ MaintenanceLogs : logs_by
+Equipment ||--o{ Bookings : booked
+Equipment ||--o{ MaintenanceLogs : maintained
+Equipment ||--|| UsageCounter : tracks
+Bookings ||--o{ OverdueAlerts : triggers
+@enduml

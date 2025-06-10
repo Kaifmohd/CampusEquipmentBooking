@@ -1,0 +1,9 @@
+@startuml
+start
+:Input: booking_id;
+:Update Bookings → status = 'Returned';
+:Fetch equipment_id from Bookings;
+:Update UsageCounter → usage_count += 1;
+:Commit;
+stop
+@enduml

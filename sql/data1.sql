@@ -145,6 +145,7 @@ END$$
 
 DELIMITER ;
 
+DELIMITER $$
 CREATE PROCEDURE ReturnEquipment(
     IN in_booking_id INT
 )

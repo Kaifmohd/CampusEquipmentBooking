@@ -1,0 +1,29 @@
+@startuml
+left to right direction
+actor Student
+actor Technician
+actor Admin
+
+rectangle "Campus Equipment Booking System" {
+
+  (Book Equipment) as BE
+  (Return Equipment) as RE
+  (View Booking Status) as VBS
+  (Log Maintenance) as LM
+  (Assign Technician) as AT
+  (View Assigned Equipment) as VAE
+  (View Usage Reports) as VUR
+  (Cleanup Overdue Alerts) as COA
+
+  Student --> BE
+  Student --> RE
+  Student --> VBS
+
+  Technician --> LM
+  Technician --> VAE
+
+  Admin --> AT
+  Admin --> VUR
+  Admin --> COA
+}
+@enduml

@@ -1,0 +1,18 @@
+@startuml
+package "campus_db1" {
+    [AssignTechnician] --> [MaintenanceLogs]
+    [AssignTechnician] --> [Equipment]
+
+    [SafeBookEquipment] --> [Equipment]
+    [SafeBookEquipment] --> [Bookings]
+
+    [ReturnEquipment] --> [Bookings]
+    [ReturnEquipment] --> [UsageCounter]
+
+    [trg_check_overdue_return] --> [Bookings]
+    [trg_check_overdue_return] --> [OverdueAlerts]
+
+    [CleanupOldOverdueAlerts] --> [Bookings]
+    [CleanupOldOverdueAlerts] --> [OverdueAlerts]
+}
+@enduml

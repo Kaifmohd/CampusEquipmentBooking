@@ -1,0 +1,9 @@
+@startuml
+start
+:Input: tech_id, equip_id, log_text;
+:Insert log into MaintenanceLogs;
+:Update Equipment
+-> Set availability = 'Unavailable';
+-> Set condition1 = 'Needs Maintenance';
+stop
+@enduml

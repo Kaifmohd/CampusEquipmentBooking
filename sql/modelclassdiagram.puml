@@ -1,0 +1,29 @@
+@startuml
+
+class User {
+  - int userId
+  - String name
+  - String role // Student, Admin, Technician
+}
+
+class Equipment {
+  - int equipmentId
+  - String type1
+  - String condition1
+  - String location
+  - String availability // Available, Unavailable
+}
+
+class Booking {
+  - int bookingId
+  - int equipmentId
+  - int userId
+  - Date dateFrom
+  - Date dateTo
+  - String status1 // Assigned, Returned
+}
+
+User "1" o-- "many" Booking : makes
+Equipment "1" o-- "many" Booking : booked in
+
+@enduml
