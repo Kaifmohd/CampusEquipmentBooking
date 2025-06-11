@@ -32,6 +32,13 @@ public class MainMenu extends JFrame {
         btnUsers.setBounds(startX, startY + 3 * (btnHeight + gap), btnWidth, btnHeight);
         add(btnUsers);
 
+        JButton btnExtendBooking = new JButton("Extend Booking");
+        btnExtendBooking.setBounds(startX, startY + 4 * (btnHeight + gap), btnWidth, btnHeight);
+        add(btnExtendBooking);
+
+
+
+
         btnEquipment.addActionListener(e -> {
             new EquipmentForm().setVisible(true);
             this.dispose();
@@ -44,6 +51,10 @@ public class MainMenu extends JFrame {
         });
         btnUsers.addActionListener(e -> {
             new UserForm().setVisible(true);
+        });
+
+        btnExtendBooking.addActionListener(e -> {
+            new ExtendBookingForm().setVisible(true);
         });
     }
 
