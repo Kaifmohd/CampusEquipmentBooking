@@ -180,3 +180,46 @@ END $$
 DELIMITER ;
 
 
+
+DROP PROCEDURE IF EXISTS ExtendBookingPeriod;
+DELIMITER //
+
+CREATE PROCEDURE ExtendBookingPeriod (
+    IN bookingId INT,
+    IN newDateTo DATE,
+    OUT result_message VARCHAR(100)
+)
+BEGIN
+    DECLARE equipmentId INT;
+    DECLARE currentDateFrom DATE;
+    DECLARE conflictCount INT DEFAULT 0;
+
+START TRANSACTION;
+
+SELECT equipment_id, date_from INTO equipmentId, currentDateFrom
+FROM Bookings
+WHERE booking_id = bookingId;
+
+SELECT COUNT(*) INTO conflictCount
+FROM Bookings
+WHERE equipment_id = equipmentId
+  AND booking_id != bookingId
+      AND date_from <= newDateTo
+      AND date_to >= currentDateFrom;
+
+IF conflictCount > 0 THEN
+        ROLLBACK;
+        SET result_message = 'Extension failed: conflicting booking exists.';
+ELSE
+UPDATE Bookings
+SET date_to = newDateTo
+WHERE booking_id = bookingId;
+COMMIT;
+SET result_message = 'Booking extended successfully!';
+END IF;
+END;
+//
+
+DELIMITER ;
+
+
